@@ -143,3 +143,198 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SinhVienRepo extends JpaRepository<SinhVien, Long> {
 }
 ```
+
+### Request 
+ bạn cần tạo một class để chứa các request của sinh viên 
+ 
+```markdown
+package com.example.demo.request;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
+@Validated
+@Getter
+@Setter
+public class SinhVienRequest {
+    @NotEmpty
+    @NotBlank
+    @Min(6)
+    private String tenSinhVien;
+}
+```
+
+### Service
+
+Lớp Service nằm giữa bộ controller và lớp DAO và chứa các phương thức trừu tượng. Nói chung, bạn thực hiện gọi các hàm trong lớp dịch vụ này.
+
+```markdown
+package com.example.demo.service;
+
+import com.example.demo.model.SinhVien;
+import com.example.demo.request.SinhVienRequest;
+
+import java.util.List;
+
+public interface SinhVienService {
+
+    public List<SinhVien> getList();
+
+    public SinhVien addNew(SinhVienRequest sinhVien);
+
+    public boolean delete(long id);
+
+    public SinhVien update(long id, SinhVienRequest sinhVien);
+
+    public SinhVien findById(long id);
+
+}
+```
+
+### implements
+
+Lớp  **SinhVienServiceImpl** ghi đè các phương thức của  **SinhVienService**  và thực hiện logic nghiệp vụ trong lớp dịch vụ này\
+Bạn nhận được kết quả của các truy vấn nối từ kho lưu trữ và chuyển cho lớp điều khiển REST.\
+Tôi sử dụng cùng một phương pháp để lưu hoặc cập nhật thông tin công ty mới hoặc hiện có tương ứng.
+
+```markdown
+package com.example.demo.service.impl;
+
+import com.example.demo.model.SinhVien;
+import com.example.demo.repository.SinhVienRepo;
+import com.example.demo.request.SinhVienRequest;
+import com.example.demo.service.SinhVienService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class SinhVienServiceImpl implements SinhVienService {
+
+    @Autowired
+    private SinhVienRepo sinhVienRepository;
+
+    @Override
+    public List<SinhVien> getList() {
+        return sinhVienRepository.findAll();
+    }
+
+    @Override
+    public SinhVien addNew(SinhVienRequest sinhVienRequest) {
+        SinhVien sinhVien = new SinhVien();
+        BeanUtils.copyProperties(sinhVienRequest, sinhVien);
+        return sinhVienRepository.save(sinhVien);
+    }
+
+    @Override
+    public boolean delete(long id) {
+        Optional<SinhVien> sinhVien = sinhVienRepository.findById(id);
+        if(sinhVien.isPresent()){
+            sinhVienRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public SinhVien update(long id, SinhVienRequest sinhVienRequest) {
+        SinhVien sinhVien = sinhVienRepository.findById(id).orElse(null);
+        sinhVien.setTenSinhVien(sinhVienRequest.getTenSinhVien());
+        return sinhVienRepository.save(sinhVien);
+    }
+
+    @Override
+    public SinhVien findById(long id) {
+        return sinhVienRepository.findById(id).orElse(null);
+    }
+}
+```
+### Controller
+
+> SinhVienController: hiển thị tất cả các sinh viên có trong cơ sở dữ liệu của bạn
+
+```markdown
+package com.example.demo.controller;
+
+import com.example.demo.model.SinhVien;
+import com.example.demo.service.SinhVienService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/view")
+public class SinhVienController {
+
+    @Autowired()
+    private SinhVienService sinhVienService;
+
+    @GetMapping()
+    public String listSinhVien(Model model){
+        List<SinhVien> list = sinhVienService.getList();
+        System.out.println(list.get(0).getMaSinhVien());
+        model.addAttribute("list", list);
+        return "sinhViens";
+    }
+}
+
+```
+*- bạn có thể lấy file sinhviens.html ngay tại đây 
+[Link]https://github.com/thangdtph27626/demo_crud_ajax.github.io/blob/master/src/main/resources/templates/sinhViens.html
+
+> để hiển thị danh sách sinh viên trong mysql
+```markdownmarkdown
+<table id="custom-table"
+                   class="table table-bordered m-table d-sm-table m-table--head-bg-primary">
+                <thead>
+                <tr>
+                    <td>mã sinh viên</td>
+                    <td>ten sinh viên</td>
+                    <td>Hành động</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${list}">
+                    <td th:text="${item.maSinhVien}"></td>
+                    <td th:text="${item.tenSinhVien}"></td>
+                    <td>
+                        <button
+                                type="button"
+                                class="btn btn-primary"
+                                th:attr="onclick=|openModalUpdateSinhVien('${item.maSinhVien}')|">
+                            Sửa
+                        </button>
+                        </button>
+                        <button
+                                type="button"
+                                class="btn btn-danger"
+                                data-toggle="modal"
+                                th:attr="onclick=|openModalRemoveSinhVien('${item.maSinhVien}')|">
+                            Xoá
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+```
+
+> chú thích
+
+++ th:each: giúp bạn lặp qua các giá trị bắt đầu từ 0
+++ th:attr: lưu trữ giá trị trong biến 
+
+qua các bước trên bạn sẽ nhận được một table chứa các sinh viên trong db của bạn 
+<img width="712" alt="image" src="https://user-images.githubusercontent.com/109157942/184501117-a69d13c9-abcc-4bf3-ab13-02e6c2ea7bb0.png">
+
