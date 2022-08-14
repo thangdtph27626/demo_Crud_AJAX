@@ -2,10 +2,8 @@ package com.example.demo.service.impl;
 
 import com.example.demo.model.SinhVien;
 import com.example.demo.repository.SinhVienRepo;
-import com.example.demo.repository.SinhVienRepository;
 import com.example.demo.request.SinhVienRequest;
 import com.example.demo.service.SinhVienService;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

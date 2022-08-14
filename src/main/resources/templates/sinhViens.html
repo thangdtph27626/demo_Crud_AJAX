@@ -84,28 +84,8 @@
                     <td>Hành động</td>
                 </tr>
                 </thead>
-                <tbody>
-                <tr th:each="item : ${list}">
-                    <td th:text="${item.maSinhVien}"></td>
-                    <td th:text="${item.tenSinhVien}"></td>
-                    <td>
-                        <button
-                                type="button"
-                                class="btn btn-primary"
-                                th:attr="onclick=|openModalUpdateSinhVien('${item.maSinhVien}')|">
-                            Sửa
-                        </button>
-                        </button>
-                        <button
-                                type="button"
-                                class="btn btn-danger"
-                                data-toggle="modal"
-                                th:attr="onclick=|openModalRemoveSinhVien('${item.maSinhVien}')|">
-                            Xoá
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
+                <tbody id="dataSinhVien">
+                  </tbody>
             </table>
             <!-- end hiển thị thông tin Sinh Viên -->
 
@@ -190,7 +170,7 @@
                 </div>
             </div>
 
-            <!-- end update thông tin Sinh Viên -->
+            <!-- end delete thông tin Sinh Viên -->
         </div>
     </div>
 </div>

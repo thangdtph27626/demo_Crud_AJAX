@@ -3,8 +3,46 @@ let SinhVienAPI = "/api"
 
 $(document).ready(function () {
     $("#sinh_vien_error").text("");
+    loadData()
 });
 
+function loadData(){
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: SinhVienAPI ,
+        success: function (responseData) {
+            console.log(responseData)
+            $("#dataSinhVien").html(responseData.map(function (item) {
+                return `
+                <tr>
+                <td>${item.maSinhVien}</td>
+                <td>${item.tenSinhVien}</td>
+                 <td>
+                        <button
+                                type="button"
+                                class="btn btn-primary"
+                               onclick="openModalUpdateSinhVien(${item.maSinhVien})">
+                            Sửa
+                        </button>
+                        </button>
+                        <button
+                                type="button"
+                                class="btn btn-danger"
+                                data-toggle="modal"
+                               onclick="openModalRemoveSinhVien(${item.maSinhVien})">
+                            Xoá
+                        </button>
+                    </td>
+                    </tr>
+                `
+            }))
+        },
+        error: function (e) {
+            console.log("ERROR : ", e);
+        }
+    });
+}
 
 $("#form_create_sinh_vien").submit(function (event) {
     event.preventDefault();
@@ -46,7 +84,7 @@ function openModalUpdateSinhVien(idSinhVien) {
         success: function (responseData) {
             console.log(responseData.data)
             $("#id_sinh_vien_update").val(idSinhVien);
-            // $("#ten_sinh_vien_update").val(responseData.data.tenSinhVien);
+            $("#ten_sinh_vien_update").val(responseData.tenSinhVien);
         },
         error: function (e) {
             console.log("ERROR : ", e);
@@ -83,6 +121,7 @@ $("#form_sinh_vien_update").submit(function (event) {
 });
 
 function openModalRemoveSinhVien(sinhvienId) {
+    console.log(sinhvienId)
     $("#modal_sinh_vien_remove").modal('show');
     $.ajax({
         type: "GET",
