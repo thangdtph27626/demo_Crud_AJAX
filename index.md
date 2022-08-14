@@ -288,11 +288,65 @@ public class SinhVienController {
 }
 
 ```
+
+> SinhVienResController
+
+```markdown
+package com.example.demo.controller;
+
+import com.example.demo.model.SinhVien;
+import com.example.demo.request.SinhVienRequest;
+import com.example.demo.service.SinhVienService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+public class SinhVienResController {
+
+    @Autowired()
+    private SinhVienService sinhVienService;
+    
+	// hiển thị tất cả các sinh viên
+  @GetMapping()
+    public List<SinhVien> listSinhVien(Model model){
+        List<SinhVien> list = sinhVienService.getList();
+        return list;
+    }
+	
+	// tìm kiếm sinh viên theo id 
+    @GetMapping("/{id}")
+    public SinhVien DetailSinhVien(@PathVariable("id") long id){
+        SinhVien sinhVien = null;
+        try {
+            sinhVien = sinhVienService.findById(id);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return sinhVien;
+    }
+}
+
+
+```
+
 ## Thực Hiện CRUD với ajax
 
 > chú thích
 
 ```markdown
+$(selector).action()
+
  $.ajax({
             type: Một loại yêu cầu http, ví dụ như POST, PUT và GET. Mặc định là GET,
             contentType: Chuỗi chứa một loại nội dung khi gửi nội dung MIME tới máy chủ.Default là "application / x-www-form-urlencoded; charset = UTF-8,
@@ -303,8 +357,8 @@ public class SinhVienController {
                  window.open(SinhVienView, '_self');   
 		//windown.open: mở ra một cửa sổ trình duyệt mới hoặc một tab mới, tùy thuộc vào cài đặt trình duyệt của bạn và các giá trị tham số
 		// _self: URL thay thế trang hiện tại
-                 $("#modal_create").modal("hide"); 
-		// ẩn from tạo mới  
+                 $("#demo").modal("hide"); 
+		// tìm thẻ có id là demo và thực hiện ẩn thẻ
             },
             error: function (e) {  // Một hàm gọi lại được thực thi khi yêu cầu không thành công.
                 console.log("ERROR : ", e);
@@ -339,7 +393,7 @@ let SinhVienAPI = "/api"
 
 $(document).ready(function () { //thực hiện các mã js khi trang Mô hình đối tượng tài liệu (DOM) đã sẵn sàng
     $("#sinh_vien_error").text("");
-    loadData()  // thực hiện gọi hàm load data để hiển thị dữ liệu lên table
+    loadData()  //gọi hàm loadData() ra để thực thi
 });
 
 function loadData(){
@@ -373,6 +427,10 @@ function loadData(){
                     </tr>
                 `
             }))
+	        /*
+		    hàm map sẽ return về 1 đoạn template string chứa cả 1 dòng trong table
+		    trong mảng có bao nhiêu phần tử sẽ lặp bấy nhiêu lần và hiển thị 
+        	*/ 
         },
         error: function (e) {
             console.log("ERROR : ", e);
@@ -545,20 +603,9 @@ $("#form_create_sinh_vien").submit(function (event) {
 
 2: SinhVienResController
 
-   bạn thêm một hàm thực hiện xóa dữ liệu trong db và một hàm tìm kiếm sinh viên theo id 
+   bạn thêm một hàm thực hiện xóa dữ liệu trong db
    
    ```markdown
-   
-   @GetMapping("/{id}")
-    public SinhVien DetailSinhVien(@PathVariable("id") long id){
-        SinhVien sinhVien = null;
-        try {
-            sinhVien = sinhVienService.findById(id);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        return sinhVien;
-    }
     
    @DeleteMapping("/{id}")
     public boolean delete(@PathVariable("id") long id){
@@ -569,7 +616,12 @@ $("#form_create_sinh_vien").submit(function (event) {
 3: sinhvien.js
 
 ```markdown
-function openModalRemoveSinhVien(sinhvienId) {   // thực hiện tìm kiếm sinh viên theo tham số ** sinhvienId **
+
+ /*
+        khởi tạo hàm openModalRemoveSinhVien để tìm kiếm sinh viên
+        truyền vào hàm 1 tham số sinhvienId để tìm ra thông tin sinh viên cần xóa
+*/
+function openModalRemoveSinhVien(sinhvienId) {  
     $("#modal_sinh_vien_remove").modal('show');
     $.ajax({
         type: "GET",
@@ -586,6 +638,9 @@ function openModalRemoveSinhVien(sinhvienId) {   // thực hiện tìm kiếm si
     });
 }
 
+/*
+        Hàm được thực thi khi người dùng nhấp nút submit 
+*/
 $("#form_sinh_vien_delete").submit(function (event) { // thực hiện xóa Sinh viên 
     event.preventDefault();
     let sinhvienId = $("#remove_sinh_vien").val();
@@ -599,7 +654,7 @@ $("#form_sinh_vien_delete").submit(function (event) { // thực hiện xóa Sinh
         dataType: 'json',
         success: function () {
             window.open(SinhVienView, '_self');
-            $("#modal_update_hoc_ky").modal("hide");
+            $("#form_sinh_vien_delete").modal("hide");
         },
         error: function (e) {
             console.log("ERROR : ", e);
