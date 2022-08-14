@@ -295,7 +295,7 @@ public class SinhVienController {
 [Link]https://github.com/thangdtph27626/demo_crud_ajax.github.io/blob/master/src/main/resources/templates/sinhViens.html
 
 > để hiển thị danh sách sinh viên trong mysql
-```markdownmarkdown
+```markdown
 <table id="custom-table"
                    class="table table-bordered m-table d-sm-table m-table--head-bg-primary">
                 <thead>
@@ -337,4 +337,144 @@ public class SinhVienController {
 
 qua các bước trên bạn sẽ nhận được một table chứa các sinh viên trong db của bạn 
 <img width="712" alt="image" src="https://user-images.githubusercontent.com/109157942/184501117-a69d13c9-abcc-4bf3-ab13-02e6c2ea7bb0.png">
+
+### 1: thêm dữ liệu với ajax
+---
+
+1: html 
+
+```markdown
+<div class="m-portlet__body">
+                <div class="row">
+                    <div class="col-6 d-inline"
+                    >
+                        <button
+                                data-toggle="modal"
+                                data-target="#modal_create"
+                                class="col-12 col-sm-8 col-md-4 btn btn-success">
+                            Thêm sinh vien
+                        </button>
+                        <div class="modal fade "
+                             id="modal_create"
+                             tabindex="-1"
+                             aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <form id="form_create_sinh_vien">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Thêm Sinh Vien</h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Ten Sinh Vien</label>
+                                                <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        id="tenSinhVien">
+                                                <span class="text-danger"
+                                                      id="sinh_vien_error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">Thêm mới
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+```
+2: trong file **SinhVienResController** bạn thực hiện save dữ liệu vào db 
+
+```markdown
+
+@RestController
+@RequestMapping("/api")
+public class SinhVienResController {
+
+    @Autowired()
+    private SinhVienService sinhVienService;
+
+    @PostMapping()
+    public SinhVien addNew(@RequestBody SinhVienRequest sinhVien){
+        return sinhVienService.addNew(sinhVien);
+    }
+}
+```
+
+3: thực hiện Phần tiếp theo chứa lập trình jQuery AJAX để thực hiện các hoạt động thêm trong file ** SinhVien.js **
+
+```markdown
+let SinhVienView = "/view"
+let SinhVienAPI = "/api"
+
+$("#form_create_sinh_vien").submit(function (event) {
+//(tìm thẻ có id **form_create_sinh_vien**).(sự kiện) 
+//         sự kiện này sẽ thực hiện chức năng trong function
+//         trong function truyền vào 1 tham số là event: tham số này được sử dụng để chặn sự kiện reload
+    event.preventDefault(); 
+    // chặn sự kiện reload
+    let tenSinhVien = $("#tenSinhVien").val();
+    // tìm phần tử có id **tenSinhVien** và gán cho biến tenSinhVien
+    console.log(tenSinhVien)
+    let sinhVienRequest = {};  
+    // khởi tạo một object sinhvienrequest 
+    sinhVienRequest["tenSinhVien"] = tenSinhVien;
+    //               key             value
+    
+    // kiểm tra dữ liệu của form
+    if (tenSinhVien.length === 0) {
+        $("#sinh_vien_error").text("Tên học kỳ không được để trống");
+    } else if (tenSinhVien.length < 6) {
+        $("#sinh_vien_error").text("Tên học kỳ tối thiếu 6 ký tự");
+    } else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: SinhVienAPI,
+            data: JSON.stringify(sinhVienRequest),  // JSON.stringify() chuyển đổi dữ liệu sang kiểu chuỗi
+            dataType: 'json',
+            success: function () {
+                 window.open(SinhVienView, '_self');
+                 $("#modal_create").modal("hide");
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+            }
+        });
+    }
+});
+```
+> chú thích 
+
+```markdown
+ $.ajax({
+            type: Một loại yêu cầu http, ví dụ như POST, PUT và GET. Mặc định là GET,
+            contentType: Chuỗi chứa một loại nội dung khi gửi nội dung MIME tới máy chủ.Default là "application / x-www-form-urlencoded; charset = UTF-8,
+            url: Một chuỗi chứa URL mà yêu cầu được gửi đến,
+            data: Một dữ liệu được gửi đến máy chủ. Nó có thể là đối tượng JSON, chuỗi hoặc mảng,
+            dataType: Loại dữ liệu mà bạn đang mong đợi trả lại từ máy chủ,
+            success: function () { // Một hàm gọi lại sẽ được thực thi khi yêu cầu Ajax thành công
+                 window.open(SinhVienView, '_self');   
+		//windown.open: mở ra một cửa sổ trình duyệt mới hoặc một tab mới, tùy thuộc vào cài đặt trình duyệt của bạn và các giá trị tham số
+		// _self: URL thay thế trang hiện tại
+                 $("#modal_create").modal("hide"); 
+		// ẩn from tạo mới  
+            },
+            error: function (e) {  // Một hàm gọi lại được thực thi khi yêu cầu không thành công.
+                console.log("ERROR : ", e);
+            }
+        });
+```
 
