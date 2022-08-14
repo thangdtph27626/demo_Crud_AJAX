@@ -283,62 +283,106 @@ public class SinhVienController {
 
     @GetMapping()
     public String listSinhVien(Model model){
-        List<SinhVien> list = sinhVienService.getList();
-        System.out.println(list.get(0).getMaSinhVien());
-        model.addAttribute("list", list);
-        return "sinhViens";
+        return "sinhViens";  
     }
 }
 
 ```
-*- bạn có thể lấy file sinhviens.html ngay tại đây 
-[Link]https://github.com/thangdtph27626/demo_crud_ajax.github.io/blob/master/src/main/resources/templates/sinhViens.html
+## Thực Hiện CRUD với ajax
 
-> để hiển thị danh sách sinh viên trong mysql
+> chú thích
+
+```markdown
+ $.ajax({
+            type: Một loại yêu cầu http, ví dụ như POST, PUT và GET. Mặc định là GET,
+            contentType: Chuỗi chứa một loại nội dung khi gửi nội dung MIME tới máy chủ.Default là "application / x-www-form-urlencoded; charset = UTF-8,
+            url: Một chuỗi chứa URL mà yêu cầu được gửi đến,
+            data: Một dữ liệu được gửi đến máy chủ. Nó có thể là đối tượng JSON, chuỗi hoặc mảng,
+            dataType: Loại dữ liệu mà bạn đang mong đợi trả lại từ máy chủ,
+            success: function () { // Một hàm gọi lại sẽ được thực thi khi yêu cầu Ajax thành công
+                 window.open(SinhVienView, '_self');   
+		//windown.open: mở ra một cửa sổ trình duyệt mới hoặc một tab mới, tùy thuộc vào cài đặt trình duyệt của bạn và các giá trị tham số
+		// _self: URL thay thế trang hiện tại
+                 $("#modal_create").modal("hide"); 
+		// ẩn from tạo mới  
+            },
+            error: function (e) {  // Một hàm gọi lại được thực thi khi yêu cầu không thành công.
+                console.log("ERROR : ", e);
+            }
+        });
+```
+
+###1: đọc dữ liệu 
+
+1: html 
+
 ```markdown
 <table id="custom-table"
                    class="table table-bordered m-table d-sm-table m-table--head-bg-primary">
                 <thead>
-                <tr>
-                    <td>mã sinh viên</td>
-                    <td>ten sinh viên</td>
-                    <td>Hành động</td>
-                </tr>
+			<tr>
+			    <td>mã sinh viên</td>
+			    <td>ten sinh viên</td>
+			    <td>Hành động</td>
+			</tr>
                 </thead>
-                <tbody>
-                <tr th:each="item : ${list}">
-                    <td th:text="${item.maSinhVien}"></td>
-                    <td th:text="${item.tenSinhVien}"></td>
-                    <td>
-                        <button
-                                type="button"
-                                class="btn btn-primary"
-                                th:attr="onclick=|openModalUpdateSinhVien('${item.maSinhVien}')|">
-                            Sửa
-                        </button>
-                        </button>
-                        <button
-                                type="button"
-                                class="btn btn-danger"
-                                data-toggle="modal"
-                                th:attr="onclick=|openModalRemoveSinhVien('${item.maSinhVien}')|">
-                            Xoá
-                        </button>
-                    </td>
-                </tr>
+                <tbody id="dataSinhVien">
                 </tbody>
             </table>
 ```
 
-> chú thích
+2: js
 
-++ th:each: giúp bạn lặp qua các giá trị bắt đầu từ 0
-++ th:attr: lưu trữ giá trị trong biến 
+```markdown
+let SinhVienView = "/view"
+let SinhVienAPI = "/api"
 
-qua các bước trên bạn sẽ nhận được một table chứa các sinh viên trong db của bạn 
-<img width="712" alt="image" src="https://user-images.githubusercontent.com/109157942/184501117-a69d13c9-abcc-4bf3-ab13-02e6c2ea7bb0.png">
+$(document).ready(function () { //thực hiện các mã js khi trang Mô hình đối tượng tài liệu (DOM) đã sẵn sàng
+    $("#sinh_vien_error").text("");
+    loadData()  // thực hiện gọi hàm load data để hiển thị dữ liệu lên table
+});
 
-### 1: thêm dữ liệu với ajax
+function loadData(){
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: SinhVienAPI ,
+        success: function (responseData) {
+            console.log(responseData)
+            $("#dataSinhVien").html(responseData.map(function (item) {
+                return `
+                <tr>
+			<td>${item.maSinhVien}</td>
+			<td>${item.tenSinhVien}</td>
+			  <td>
+				<button
+					type="button"
+					class="btn btn-primary"
+				       onclick="openModalUpdateSinhVien(${item.maSinhVien})">
+				    Sửa
+				</button>
+				</button>
+				<button
+					type="button"
+					class="btn btn-danger"
+					data-toggle="modal"
+				       onclick="openModalRemoveSinhVien(${item.maSinhVien})">
+				    Xoá
+				</button>
+			    </td>
+                    </tr>
+                `
+            }))
+        },
+        error: function (e) {
+            console.log("ERROR : ", e);
+        }
+    });
+}
+
+```
+
+### 2: thêm dữ liệu 
 ---
 
 1: html 
@@ -456,25 +500,221 @@ $("#form_create_sinh_vien").submit(function (event) {
     }
 });
 ```
-> chú thích 
+
+### 3: xóa 
+
+1:html
 
 ```markdown
- $.ajax({
-            type: Một loại yêu cầu http, ví dụ như POST, PUT và GET. Mặc định là GET,
-            contentType: Chuỗi chứa một loại nội dung khi gửi nội dung MIME tới máy chủ.Default là "application / x-www-form-urlencoded; charset = UTF-8,
-            url: Một chuỗi chứa URL mà yêu cầu được gửi đến,
-            data: Một dữ liệu được gửi đến máy chủ. Nó có thể là đối tượng JSON, chuỗi hoặc mảng,
-            dataType: Loại dữ liệu mà bạn đang mong đợi trả lại từ máy chủ,
-            success: function () { // Một hàm gọi lại sẽ được thực thi khi yêu cầu Ajax thành công
-                 window.open(SinhVienView, '_self');   
-		//windown.open: mở ra một cửa sổ trình duyệt mới hoặc một tab mới, tùy thuộc vào cài đặt trình duyệt của bạn và các giá trị tham số
-		// _self: URL thay thế trang hiện tại
-                 $("#modal_create").modal("hide"); 
-		// ẩn from tạo mới  
+ <!-- begin delete thông tin Sinh Viên -->
+            <div
+                    class="modal fade"
+                    id="modal_sinh_vien_remove"
+                    tabindex="-1"
+                    aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-lg"
+                     role="document">
+                    <div class="modal-content">
+                        <form id="form_sinh_vien_delete">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Xoá sinh viên</h5>
+                                <button type="button" class="close"
+                                        data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có muốn xoá không ?</p>
+                                <span id="remove_sinh_vien" style="color:red;"></span>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Hủy
+                                </button>
+                                <button type="submit" class="btn btn-primary">Xoá
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- end update thông tin Sinh Viên -->
+```
+
+2: SinhVienResController
+
+   bạn thêm một hàm thực hiện xóa dữ liệu trong db và một hàm tìm kiếm sinh viên theo id 
+   
+   ```markdown
+   
+   @GetMapping("/{id}")
+    public SinhVien DetailSinhVien(@PathVariable("id") long id){
+        SinhVien sinhVien = null;
+        try {
+            sinhVien = sinhVienService.findById(id);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return sinhVien;
+    }
+    
+   @DeleteMapping("/{id}")
+    public boolean delete(@PathVariable("id") long id){
+        return sinhVienService.delete(id);
+    }
+   ```
+
+3: sinhvien.js
+
+```markdown
+function openModalRemoveSinhVien(sinhvienId) {   // thực hiện tìm kiếm sinh viên theo tham số ** sinhvienId **
+    $("#modal_sinh_vien_remove").modal('show');
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: SinhVienAPI + "/" + sinhvienId,
+        data: JSON.stringify(sinhvienId),
+        dataType: 'json',
+        success: function () {
+            $("#remove_sinh_vien").val(sinhvienId); // gán giá trị cho thẻ có id là ** remove_sinh_vien**  
+        },
+        error: function (e) {
+            console.log("ERROR : ", e);
+        }
+    });
+}
+
+$("#form_sinh_vien_delete").submit(function (event) { // thực hiện xóa Sinh viên 
+    event.preventDefault();
+    let sinhvienId = $("#remove_sinh_vien").val();
+     // tìm phần tử có id **remove_sinh_vien** và gán cho biến sinhvienId
+
+    $.ajax({
+        type: "DELETE",
+        contentType: "application/json",
+        url: SinhVienAPI + "/" + sinhvienId,
+        data: JSON.stringify(sinhvienId),
+        dataType: 'json',
+        success: function () {
+            window.open(SinhVienView, '_self');
+            $("#modal_update_hoc_ky").modal("hide");
+        },
+        error: function (e) {
+            console.log("ERROR : ", e);
+        }
+    });
+
+});
+```
+ ### 4: update 
+ 
+ 1: html 
+ 
+ ```markdown
+            <div
+                    class="modal fade"
+                    tabindex="-1"
+                    id="modal_update_sinh_vien"
+                    aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-lg"
+                     role="document">
+                    <div class="modal-content">
+                        <form id="form_sinh_vien_update">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Cập
+                                    nhật Sinh Viên</h5>
+                                <button type="button" class="close"
+                                        data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <span id="id_sinh_vien_update" style="color:red;"></span>
+
+                                <div class="form-group">
+                                    <label
+                                            class="col-form-label">Tên Sinh Viên</label>
+                                    <input
+                                            type="text"
+                                            class="form-control"
+                                            id="ten_sinh_vien_update"/>
+                                    <small class="text-danger"
+                                           id="errorMessageUpdate"></small>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Hủy
+                                </button>
+                                <button type="submit" class="btn btn-primary">Cập
+                                    nhật
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+ ```
+2: SinhVienResController.java
+
+```markdown
+ @PutMapping("/{id}")
+    public SinhVien update(@PathVariable("id") long id, @RequestBody SinhVienRequest sinhVienRequest){
+        return sinhVienService.update(id, sinhVienRequest);
+    }
+```
+
+3: sinhvien.js
+
+```markdown
+   function openModalUpdateSinhVien(idSinhVien) { // thực hiện tìm kiếm sinh viên 
+    $("#modal_update_sinh_vien").modal('show');
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: SinhVienAPI + "/" + idSinhVien,
+        data: JSON.stringify(idSinhVien),
+        dataType: 'json',
+        success: function (responseData) {
+            console.log(responseData.data)
+            $("#id_sinh_vien_update").val(idSinhVien);
+            $("#ten_sinh_vien_update").val(responseData.tenSinhVien); 
+        },
+        error: function (e) {
+            console.log("ERROR : ", e);
+        }
+    });
+}
+
+$("#form_sinh_vien_update").submit(function (event) {  // update Sinh viên
+    event.preventDefault();
+    let tenSinhVien = $("#ten_sinh_vien_update").val();
+    let idSinhvien = $("#id_sinh_vien_update").val();
+    let sinhVienRequest = {};
+    sinhVienRequest["tenSinhVien"] = tenSinhVien;
+    if (tenSinhVien.length === 0) {
+        $("#errorMessageUpdate").text("Tên học kỳ không được để trống");
+    } else if (tenSinhVien.length < 6) {
+        $("#errorMessageUpdate").text("Tên học kỳ tối thiếu 6 ký tự");
+    } else {
+        $.ajax({
+            type: "PUT",
+            contentType: "application/json",
+            url: SinhVienAPI + "/" + idSinhvien,
+            data: JSON.stringify(sinhVienRequest),
+            dataType: 'json',
+            success: function () {
+                window.open(SinhVienView, '_self');
+                $("#modal_update_hoc_ky").modal("hide");
             },
-            error: function (e) {  // Một hàm gọi lại được thực thi khi yêu cầu không thành công.
+            error: function (e) {
                 console.log("ERROR : ", e);
             }
         });
-```
+    }
+});
 
+```
