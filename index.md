@@ -312,7 +312,7 @@ public class SinhVienController {
         });
 ```
 
-###1: đọc dữ liệu 
+### 1: đọc dữ liệu 
 
 1: html 
 
