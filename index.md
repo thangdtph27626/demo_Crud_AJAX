@@ -721,3 +721,26 @@ $("#form_sinh_vien_update").submit(function (event) {  // update Sinh viên
 ```
 
 
+
+### kết quả 
+> màn hình chính
+
+<img width="960" alt="image" src="https://user-images.githubusercontent.com/109157942/184519763-3671dbf8-fa32-4f46-be6c-5c1d0855f761.png">
+
+> thêm mới sinh viên 
+
+<img width="609" alt="image" src="https://user-images.githubusercontent.com/109157942/184519778-a7e36263-ff81-4b45-bf66-66356a903328.png">
+
+> xóa sinh viên 
+
+<img width="603" alt="image" src="https://user-images.githubusercontent.com/109157942/184519789-8dbf87a1-83d3-46d1-af64-1cfe7543626d.png">
+
+> update sinh viên 
+
+<img width="602" alt="image" src="https://user-images.githubusercontent.com/109157942/184519799-b3a5fa5f-83cc-4ad6-a998-8b7e97271b09.png">
+
+
+### Kết luận
+Trong bài viết này, chúng ta đã học cách xây dựng một ứng dụng web CRUD cơ bản với ajax.
+
+tất cả các mẫu mã hiển thị trong bài viết đều có sẵn [trên github](https://github.com/thangdtph27626/demo_crud_ajax.github.io)
