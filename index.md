@@ -608,6 +608,7 @@ $("#form_sinh_vien_delete").submit(function (event) { // thực hiện xóa Sinh
 
 });
 ```
+
  ### 4: update 
  
  1: html 
@@ -718,3 +719,5 @@ $("#form_sinh_vien_update").submit(function (event) {  // update Sinh viên
 });
 
 ```
+
+
