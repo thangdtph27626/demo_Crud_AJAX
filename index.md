@@ -353,7 +353,8 @@ $(selector).action()
             url: Một chuỗi chứa URL mà yêu cầu được gửi đến,
             data: Một dữ liệu được gửi đến máy chủ. Nó có thể là đối tượng JSON, chuỗi hoặc mảng,
             dataType: Loại dữ liệu mà bạn đang mong đợi trả lại từ máy chủ,
-            success: function () { // Một hàm gọi lại sẽ được thực thi khi yêu cầu Ajax thành công
+            success: function (responseData) { // Một hàm gọi lại sẽ được thực thi khi yêu cầu Ajax thành công
+	    	// responseData là đối tượng trả về chứa tất cả các trường 
                  window.open(SinhVienView, '_self');   
 		//windown.open: mở ra một cửa sổ trình duyệt mới hoặc một tab mới, tùy thuộc vào cài đặt trình duyệt của bạn và các giá trị tham số
 		// _self: URL thay thế trang hiện tại
