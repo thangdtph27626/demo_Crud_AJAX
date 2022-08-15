@@ -152,13 +152,10 @@ package com.example.demo.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.validation.annotation.Validated;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
-@Validated
 @Getter
 @Setter
 public class SinhVienRequest {
@@ -183,15 +180,15 @@ import java.util.List;
 
 public interface SinhVienService {
 
-    public List<SinhVien> getList();
+     List<SinhVien> getList();
 
-    public SinhVien addNew(SinhVienRequest sinhVien);
+     SinhVien addNew(SinhVienRequest sinhVien);
 
-    public boolean delete(long id);
+     boolean delete(long id);
 
-    public SinhVien update(long id, SinhVienRequest sinhVien);
+     SinhVien update(long id, SinhVienRequest sinhVien);
 
-    public SinhVien findById(long id);
+     SinhVien findById(long id);
 
 }
 ```
@@ -285,6 +282,7 @@ public class SinhVienController {
     public String listSinhVien(Model model){
         return "sinhViens";  
     }
+    
 }
 
 ```
@@ -372,18 +370,18 @@ $(selector).action()
 1: html 
 
 ```markdown
-<table id="custom-table"
-                   class="table table-bordered m-table d-sm-table m-table--head-bg-primary">
-                <thead>
-			<tr>
-			    <td>mã sinh viên</td>
-			    <td>ten sinh viên</td>
-			    <td>Hành động</td>
-			</tr>
-                </thead>
-                <tbody id="dataSinhVien">
-                </tbody>
-            </table>
+<table id="custom-table" class="table table-bordered m-table d-sm-table m-table--head-bg-primary">
+      <thead>
+		<tr>
+			<td>mã sinh viên</td>
+			<td>ten sinh viên</td>
+			<td>Hành động</td>
+		</tr>
+     </thead>
+     <tbody id="dataSinhVien">
+	     
+     </tbody>
+ </table>
 ```
 
 2: js
@@ -424,8 +422,8 @@ function loadData(){
 				       onclick="openModalRemoveSinhVien(${item.maSinhVien})">
 				    Xoá
 				</button>
-			    </td>
-                    </tr>
+			</td>
+                 </tr>
                 `
             }))
 	        /*
@@ -449,8 +447,7 @@ function loadData(){
 ```markdown
 <div class="m-portlet__body">
                 <div class="row">
-                    <div class="col-6 d-inline"
-                    >
+                    <div class="col-6 d-inline">
                         <button
                                 data-toggle="modal"
                                 data-target="#modal_create"
@@ -513,6 +510,7 @@ public class SinhVienResController {
     public SinhVien addNew(@RequestBody SinhVienRequest sinhVien){
         return sinhVienService.addNew(sinhVien);
     }
+    
 }
 ```
 
@@ -598,7 +596,6 @@ $("#form_create_sinh_vien").submit(function (event) {
                     </div>
                 </div>
             </div>
-
             <!-- end update thông tin Sinh Viên -->
 ```
 
