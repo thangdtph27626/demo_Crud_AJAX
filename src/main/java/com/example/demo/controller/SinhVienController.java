@@ -18,7 +18,7 @@ public class SinhVienController {
     private SinhVienService sinhVienService;
 
     @GetMapping()
-    public String listSinhVien(Model model){
+    public String listSinhVien(Model model) {
         return "sinhViens";
     }
 }

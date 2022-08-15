@@ -6,12 +6,9 @@ $(document).ready(function () {
     loadData()
 });
 
-function loadData(){
+function loadData() {
     $.ajax({
-        type: "GET",
-        contentType: "application/json",
-        url: SinhVienAPI ,
-        success: function (responseData) {
+        type: "GET", contentType: "application/json", url: SinhVienAPI, success: function (responseData) {
             console.log(responseData)
             $("#dataSinhVien").html(responseData.map(function (item) {
                 return `
@@ -37,8 +34,7 @@ function loadData(){
                     </tr>
                 `
             }))
-        },
-        error: function (e) {
+        }, error: function (e) {
             console.log("ERROR : ", e);
         }
     });
@@ -63,8 +59,8 @@ $("#form_create_sinh_vien").submit(function (event) {
             data: JSON.stringify(sinhVienRequest),
             dataType: 'json',
             success: function () {
-                 window.open(SinhVienView, '_self');
-                 $("#modal_create").modal("hide");
+                window.open(SinhVienView, '_self');
+                $("#modal_create").modal("hide");
             },
             error: function (e) {
                 console.log("ERROR : ", e);

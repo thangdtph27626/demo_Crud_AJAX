@@ -32,7 +32,7 @@ public class SinhVienServiceImpl implements SinhVienService {
     @Override
     public boolean delete(long id) {
         Optional<SinhVien> sinhVien = sinhVienRepository.findById(id);
-        if(sinhVien.isPresent()){
+        if (sinhVien.isPresent()) {
             sinhVienRepository.deleteById(id);
             return true;
         }

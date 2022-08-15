@@ -41,7 +41,7 @@ public class SinhVienResController {
     }
 
     @PutMapping("/{id}")
-    public SinhVien update(@PathVariable("id") long id, @RequestBody SinhVienRequest sinhVienRequest){
+    public SinhVien update(@PathVariable("id") long id, @RequestBody SinhVienRequest sinhVienRequest) {
         return sinhVienService.update(id, sinhVienRequest);
     }
 
