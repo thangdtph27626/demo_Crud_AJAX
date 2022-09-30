@@ -1,5 +1,5 @@
 let SinhVienView = "/view"
-let SinhVienAPI = "/api"
+let SinhVienAPI = "https://63369b9d65d1e8ef266f9da2.mockapi.io/api/users"
 
 $(document).ready(function () {
     $("#sinh_vien_error").text("");
@@ -13,13 +13,13 @@ function loadData() {
             $("#dataSinhVien").html(responseData.map(function (item) {
                 return `
                 <tr>
-                <td>${item.maSinhVien}</td>
-                <td>${item.tenSinhVien}</td>
+                <td>${item.id}</td>
+                <td>${item.name}</td>
                  <td>
                         <button
                                 type="button"
                                 class="btn btn-primary"
-                               onclick="openModalUpdateSinhVien(${item.maSinhVien})">
+                               onclick="openModalUpdateSinhVien(${item.id})">
                             Sửa
                         </button>
                         </button>
@@ -27,7 +27,7 @@ function loadData() {
                                 type="button"
                                 class="btn btn-danger"
                                 data-toggle="modal"
-                               onclick="openModalRemoveSinhVien(${item.maSinhVien})">
+                               onclick="openModalRemoveSinhVien(${item.id})">
                             Xoá
                         </button>
                     </td>
@@ -45,12 +45,12 @@ $("#form_create_sinh_vien").submit(function (event) {
     let tenSinhVien = $("#tenSinhVien").val();
     console.log(tenSinhVien)
     let sinhVienRequest = {};
-    sinhVienRequest["tenSinhVien"] = tenSinhVien;
+    sinhVienRequest["name"] = tenSinhVien;
     console.log(sinhVienRequest)
     if (tenSinhVien.length === 0) {
-        $("#sinh_vien_error").text("Tên học kỳ không được để trống");
+        $("#sinh_vien_error").text("Tên sinh vien không được để trống");
     } else if (tenSinhVien.length < 6) {
-        $("#sinh_vien_error").text("Tên học kỳ tối thiếu 6 ký tự");
+        $("#sinh_vien_error").text("Tên sinh vien tối thiếu 6 ký tự");
     } else {
         $.ajax({
             type: "POST",
@@ -78,9 +78,9 @@ function openModalUpdateSinhVien(idSinhVien) {
         data: JSON.stringify(idSinhVien),
         dataType: 'json',
         success: function (responseData) {
-            console.log(responseData.data)
-            $("#id_sinh_vien_update").val(idSinhVien);
-            $("#ten_sinh_vien_update").val(responseData.tenSinhVien);
+            console.log(responseData)
+            $("#id_sinh_vien_update").val(responseData.id);
+            $("#ten_sinh_vien_update").val(responseData.name);
         },
         error: function (e) {
             console.log("ERROR : ", e);
@@ -93,11 +93,11 @@ $("#form_sinh_vien_update").submit(function (event) {
     let tenSinhVien = $("#ten_sinh_vien_update").val();
     let idSinhvien = $("#id_sinh_vien_update").val();
     let sinhVienRequest = {};
-    sinhVienRequest["tenSinhVien"] = tenSinhVien;
+    sinhVienRequest["name"] = tenSinhVien;
     if (tenSinhVien.length === 0) {
-        $("#errorMessageUpdate").text("Tên học kỳ không được để trống");
+        $("#errorMessageUpdate").text("Tên sinh vien không được để trống");
     } else if (tenSinhVien.length < 6) {
-        $("#errorMessageUpdate").text("Tên học kỳ tối thiếu 6 ký tự");
+        $("#errorMessageUpdate").text("Tên sinh vien tối thiếu 6 ký tự");
     } else {
         $.ajax({
             type: "PUT",
@@ -142,7 +142,6 @@ $("#form_sinh_vien_delete").submit(function (event) {
         type: "DELETE",
         contentType: "application/json",
         url: SinhVienAPI + "/" + sinhvienId,
-        data: JSON.stringify(sinhvienId),
         dataType: 'json',
         success: function () {
             window.open(SinhVienView, '_self');
