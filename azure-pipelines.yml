@@ -21,3 +21,13 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
     tasks: 'build'
+- task: SqlDacpacDeploymentOnMachineGroup@0
+  inputs:
+    TaskType: 'dacpac'
+    TargetMethod: 'server'
+    ServerName: 'localhost'
+    AuthScheme: 'windowsAuthentication'
+- task: AzureMysqlDeployment@1
+  inputs:
+    TaskNameSelector: 'SqlTaskFile'
+    IpDetectionMethod: 'AutoDetect'
